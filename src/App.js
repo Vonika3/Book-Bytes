@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Fuse from "fuse.js";
 import { useCookies } from "react-cookie";
-import queryString  from "query-string";
+import queryString from "query-string";
 
 import LangFilters from "./components/LangFilters";
 import SearchBar from "./components/SearchBar";
@@ -57,7 +57,7 @@ function jsonToArray(json) {
 
 function App() {
   // keeps the state of the json
-  const [data, setData] = useState(undefined); 
+  const [data, setData] = useState(undefined);
   // put all books into one array. uses more memory, but search is faster and less complex
   const [dataArray, setDataArray] = useState([]);
   // Keeps track if all resources are loaded
@@ -66,10 +66,13 @@ function App() {
   // use the changeParameter function to set, NOT setSearchParams
   // changeParameter will retain the rest of the state
   let defaultSearch = queryString.parse(document.location.search).search || "";
-  const [searchParams, setSearchParams] = useState({ searchTerm: defaultSearch, "lang.code": "" });
+  const [searchParams, setSearchParams] = useState({
+    searchTerm: defaultSearch,
+    "lang.code": "",
+  });
   // array of all search results
   const [searchResults, setSearchResults] = useState([]);
-  const [cookies, setCookie, ] = useCookies(["lightMode"]);
+  const [cookies, setCookie] = useCookies(["lightMode"]);
   const [queries, setQueries] = useState({ lang: "", subject: "" });
 
   // eslint-disable-next-line
@@ -78,24 +81,24 @@ function App() {
   let resultsList = null; // the html string containing the search results
 
   // Used to change the search parameters state
-  // Heavily used in child components to set the state 
+  // Heavily used in child components to set the state
   const changeParameter = (param, value) => {
     setSearchParams({ ...searchParams, [param]: value });
   };
 
   // fetches data the first time the page renders
-  useEffect(() => {  
+  useEffect(() => {
     swapMode(cookies.lightMode ? themes.lightMode : themes.darkMode);
     async function fetchData() {
       try {
         setQueries(queryString.parse(document.location.search));
-    if (queries.lang) {
-      if (queries.lang === "langs" || queries.lang === "subjects") {
-        changeParameter("lang.code", "en");
-      } else {
-        changeParameter("lang.code", queries.lang);
-      }
-    }
+        if (queries.lang) {
+          if (queries.lang === "langs" || queries.lang === "subjects") {
+            changeParameter("lang.code", "en");
+          } else {
+            changeParameter("lang.code", queries.lang);
+          }
+        }
         // setLoading(true);
         let result = await axios.get(
           "https://raw.githubusercontent.com/EbookFoundation/free-programming-books-search/main/fpb.json"
@@ -105,7 +108,7 @@ function App() {
         let { arr, sections } = jsonToArray(result.data);
         setDataArray(arr);
       } catch (e) {
-        setError("Couldn't get data. Please try again later")
+        setError("Couldn't get data. Please try again later");
       }
       setLoading(false);
     }
@@ -236,7 +239,8 @@ function App() {
     <div className="wrapper">
       <ThemeContext.Consumer>
         {({ changeTheme }) => {
-          let willBeDarkMode = cookies.lightMode && cookies.lightMode.toLowerCase() !== "true"; //whether or not we are currently light mode and will become dark mode
+          let willBeDarkMode =
+            cookies.lightMode && cookies.lightMode.toLowerCase() !== "true"; //whether or not we are currently light mode and will become dark mode
           changeTheme(willBeDarkMode ? themes.light : themes.dark);
           return (
             <img
@@ -246,14 +250,19 @@ function App() {
                 setCookie("lightMode", willBeDarkMode);
                 changeTheme(willBeDarkMode ? themes.light : themes.dark);
               }}
-              style={{ width: "20px", height: "20px", display: "block", marginLeft: "auto" }}
+              style={{
+                width: "20px",
+                height: "20px",
+                display: "block",
+                marginLeft: "auto",
+              }}
             />
           );
         }}
       </ThemeContext.Consumer>
       <header className="header">
         <h1>
-          <a href="/free-programming-books-search/">free-programming-books</a>
+          <a href="/free-programming-books-search/">Book Bytes</a>
         </h1>
 
         <p>
@@ -269,14 +278,14 @@ function App() {
         </p>
 
         <p className="view">
-          <a href="https://github.com/EbookFoundation/free-programming-books" target="_blank" rel="noreferrer">
-            View the Project on GitHub <small>EbookFoundation/free-programming-books</small>
+          <a href="#" target="" rel="noreferrer">
+            View the Project on GitHub <small>vonika/book-bytes</small>
           </a>
         </p>
         <p>
           Does a link not work?
           <br />
-          <a href="https://github.com/EbookFoundation/free-programming-books/issues/" target="_blank" rel="noreferrer">
+          <a href="#" target="" rel="noreferrer">
             Report an error on GitHub
           </a>
         </p>
@@ -286,8 +295,15 @@ function App() {
             <p />
           ) : (
             <div>
-              <SearchBar changeParameter={changeParameter} defaultTerm={searchParams.searchTerm} />{" "}
-              <LangFilters changeParameter={changeParameter} data={data} langCode={searchParams["lang.code"]} />{" "}
+              <SearchBar
+                changeParameter={changeParameter}
+                defaultTerm={searchParams.searchTerm}
+              />{" "}
+              <LangFilters
+                changeParameter={changeParameter}
+                data={data}
+                langCode={searchParams["lang.code"]}
+              />{" "}
             </div>
           )}
         </div>
@@ -307,25 +323,18 @@ function App() {
             <br />
             <h2>No results found.</h2>
           </div>
-        ) : 
+        ) : (
           <MarkdownParser file={queries.file} sect={queries.sect} />
-        }
+        )}
       </section>
       <footer>
         <p>
           This project is maintained by{" "}
-          <a href="https://github.com/EbookFoundation" target="_blank" rel="noreferrer">
-            EbookFoundation
+          <a href="#" target="_blank" rel="noreferrer">
+            Vonika
           </a>
         </p>
-        <p>
-          <small>
-            Hosted on GitHub Pages — Theme by{" "}
-            <a href="https://github.com/orderedlist" target="_blank" rel="noreferrer">
-              orderedlist
-            </a>
-          </small>
-        </p>
+        <p></p>
       </footer>
     </div>
   );
